@@ -1,0 +1,1 @@
+module.exports = '<div class="note {{ type }}-note"><div class="head"><div class="source"><div class="who text-item"></div><div class="where text-item"></div></div><div class="title text-item"></div></div><div class="tags text-item"></div><div class="body"></div></div>';
