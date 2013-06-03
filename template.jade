@@ -1,8 +1,10 @@
-div(class='note {{ type }}-note')
+.note
   .head
     .source
-      .who.text-item
-      .where.text-item
-    .title.text-item
-  .tags.text-item
+      input.who(data-ng-model='note.who')
+      input.where(data-ng-model='note.where')
+    input.title(data-ng-model='note.title')
+  .tags(data-tags='note.tags')
   .body
+    .child(data-ng-repeat='child in note.children', data-note='child')
+    

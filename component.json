@@ -1,10 +1,12 @@
 {
   "name": "notes",
   "repo": "notablemind/notes",
-  "description": "Notes component",
+  "description": "Notes angular component",
   "version": "0.0.1",
   "keywords": [],
-  "dependencies": {},
+  "dependencies": {
+    "notablemind/tags": "*"
+  },
   "development": {},
   "license": "MIT",
   "main": "index.js",
