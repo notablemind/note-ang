@@ -2,7 +2,7 @@
 var template = require('template');
 
 var ng = {
-  deps: ['tags'],
+  deps: {'tags': require('tags')},
   directive: {
     scope: {},
     replace: true,
