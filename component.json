@@ -1,7 +1,7 @@
 {
-  "name": "notes",
-  "repo": "notablemind/notes",
-  "description": "Notes angular component",
+  "name": "note",
+  "repo": "notablemind/note",
+  "description": "Note angular component",
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
