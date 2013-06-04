@@ -62,31 +62,57 @@ var ng = {
             'meta left|shift tab': function (e) {
               var pnote = scope.$parent.note;
               if (!pnote) return false;
+              if (!scope.$parent.$parent.$parent.$parent) return false;
               var ppnote = scope.$parent.$parent.$parent.$parent.note;
               if (!ppnote) return false;
               var ind = scope.$parent.$index;
               var pind = scope.$parent.$parent.$parent.$index;
               var note = pnote.children.splice(ind, 1)[0];
-              ppnote.children.splice(pind+1, 0, note); // [pind+1].children.push(note);
+              ppnote.children.splice(pind+1, 0, note);
               var pnode = element[0].parentNode.parentNode.parentNode.parentNode;
               scope.$parent.$parent.$parent.$parent.$digest();
               query('.title', pnode.children[pind + 1]).focus();
             },
-            'meta down': function (e) {
+            'meta down|ctrl S': function (e) {
               var pnote = scope.$parent.note;
               if (!pnote) return false;
               var ind = scope.$parent.$index;
-              if (ind >= pnote.children.length - 1) return false;
+              // if you're at the end, move it to the top of the parent's next
+              // sibling
+              if (ind >= pnote.children.length - 1) {
+                var ppnote = scope.$parent.$parent.$parent.$parent.note;
+                if (!ppnote) return false;
+                var pind = scope.$parent.$parent.$parent.$index;
+                if (pind >= ppnote.children.length - 1) return false;
+                var note = pnote.children.splice(ind, 1)[0];
+                ppnote.children[pind + 1].children.splice(0, 0, note);
+                var pnode = element[0].parentNode.parentNode.parentNode.parentNode;
+                scope.$parent.$parent.$parent.$parent.$digest();
+                query('.title', query('.body', pnode.children[pind + 1])).focus();
+                return false;
+              }
               var note = pnote.children.splice(ind, 1)[0];
               pnote.children.splice(ind + 1, 0, note);
               scope.$parent.$parent.$digest();
               title.focus();
             },
-            'meta up': function (e) {
+            'meta up|ctrl W': function (e) {
               var pnote = scope.$parent.note;
               if (!pnote) return false;
               var ind = scope.$parent.$index;
-              if (ind < 1) return false;
+              if (ind < 1) {
+                var ppnote = scope.$parent.$parent.$parent.$parent.note;
+                if (!ppnote) return false;
+                var pind = scope.$parent.$parent.$parent.$index;
+                if (pind < 1) return false;
+                var note = pnote.children.splice(ind, 1)[0];
+                ppnote.children[pind - 1].children.push(note);
+                var pnode = element[0].parentNode.parentNode.parentNode.parentNode;
+                scope.$parent.$parent.$parent.$parent.$digest();
+                var body = query('.body', pnode.children[pind - 1]);
+                query('.title', body.children[body.children.length - 1]).focus();
+                return false;
+              }
               var note = pnote.children.splice(ind, 1)[0];
               pnote.children.splice(ind-1, 0, note);
               scope.$parent.$parent.$digest();
