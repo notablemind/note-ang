@@ -5,7 +5,11 @@
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "notablemind/tags": "*"
+    "notablemind/tags": "*",
+    "notablemind/keys": "*",
+    "component/query": "*",
+    "component/event": "*",
+    "notablemind/contenteditable": "*"
   },
   "development": {},
   "license": "MIT",
@@ -15,6 +19,6 @@
     "template.js"
   ],
   "styles": [
-    "notes.css"
+    "notes.styl"
   ]
 }

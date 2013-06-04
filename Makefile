@@ -1,10 +1,9 @@
 
-build: components index.js notes.css template.js
+build: components index.js notes.styl template.js
 	@component build --dev
 
 template.js: template.html
 	@component convert $<
-	@rm $<
 
 template.html: template.jade
 	@jade template.jade

@@ -1,8 +1,8 @@
-.note
+.note(ng-class='{"major": note.properties.type == "major"}')
   .head
-    input.title(data-ng-model='note.title')
+    .bullet {{ note.properties.type == "major" ? "&raquo;" : "&bull;" }}
+    span.title(data-ng-model='note.title', contenteditable='true')
     .tags(data-tags='note.tags')
   .body
     .child(data-ng-repeat='child in note.children', data-note='child')
-      input.title(data-ng-model='child.title')
-    
+
