@@ -1,10 +1,8 @@
 .note
   .head
-    .source
-      input.who(data-ng-model='note.who')
-      input.where(data-ng-model='note.where')
     input.title(data-ng-model='note.title')
-  .tags(data-tags='note.tags')
+    .tags(data-tags='note.tags')
   .body
     .child(data-ng-repeat='child in note.children', data-note='child')
+      input.title(data-ng-model='child.title')
     
