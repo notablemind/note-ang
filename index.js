@@ -45,78 +45,115 @@ var ng = {
             scope.$parent[name] = value;
           });
           var selTitle = '.note > .head .title';
-          var title = query('.title', element[0]);
+          var title = scope.title = query('.title', element[0]);
+          scope.parent = null;
+          if (scope.$parent.$parent &&
+              scope.$parent.$parent.move) {
+            scope.parent = scope.$parent.$parent;
+          }
+          scope.el = element[0];
+          var body = scope.body = query('.body', scope.el);
+          scope.index = function () {
+            return scope.$parent.$index;
+          };
+          scope.move = {
+            right: function (cscope) {
+              var cnote = cscope[localName];
+              if (!cnote) {
+                console.error('Was expecting a child scope w/ note', cscope);
+                return;
+              }
+              if (cscope.index() < 1) return;
+              var note = scope[localName];
+              var cindex = cscope.index();
+              note.children.splice(cindex, 1);
+              note.children[cindex-1].children.push(cnote);
+              cscope.title.blur();
+              scope.$digest();
+              var prev = body.children[cindex-1];
+              query('.title', query('.body', prev).lastElementChild).focus();
+            },
+            left: function (child, middle) {
+              var cnote = child[localName];
+              if (!cnote) {
+                console.error('Was expecting a child scope w/ note', cscope);
+                return;
+              }
+              var note = scope[localName];
+              var mnote = middle[localName];
+              mnote.children.splice(child.index(), 1);
+              var mindex = middle.index();
+              note.children.splice(mindex + 1, 0, cnote);
+              child.title.blur();
+              scope.$digest();
+              query('.title', body.children[mindex + 1]).focus();
+            },
+            down: function (cscope) {
+              var cindex = cscope.index();
+              var cnote  = cscope[localName];
+              var note = scope[localName];
+              // move out of this item and over to the next one
+              if (cindex >= note.children.length - 1) {
+                if (!scope.parent) return;
+                var index = scope.index();
+                if (index >= scope.parent[localName].children.length - 1)
+                  return;
+                note.children.splice(cindex, 1);
+                var pscope = scope.parent;
+                pscope.note.children[index + 1].children.splice(0, 0, cnote);
+                cscope.title.blur();
+                pscope.$digest();
+                query('.title', query('.body', pscope.body.children[index + 1])).focus();
+                return;
+              }
+              note.children.splice(cindex, 1);
+              note.children.splice(cindex + 1, 0, cnote);
+              cscope.title.blur();
+              scope.$digest();
+              cscope.title.focus();
+            },
+            up: function (cscope) {
+              var cindex = cscope.index();
+              var cnote  = cscope[localName];
+              var note = scope[localName];
+              // move out of this item and over to the next one
+              if (cindex < 1) {
+                if (!scope.parent) return;
+                var index = scope.index();
+                if (index < 1)
+                  return;
+                note.children.splice(cindex, 1);
+                var pscope = scope.parent;
+                pscope.note.children[index - 1].children.splice(0, 0, cnote);
+                cscope.title.blur();
+                pscope.$digest();
+                query('.title', query('.body', pscope.body.children[index - 1])).focus();
+                return;
+              }
+              note.children.splice(cindex, 1);
+              note.children.splice(cindex - 1, 0, cnote);
+              cscope.title.blur();
+              scope.$digest();
+              cscope.title.focus();
+            }
+          };
+              
           events.bind(title, 'keydown', keys({
-            'meta right|tab': function (e) {
-              var pnote = scope.$parent.note;
-              if (!pnote) return false;
-              var ind = scope.$parent.$index;
-              if (ind < 1) return false;
-              var note = pnote.children.splice(ind, 1)[0];
-              pnote.children[ind-1].children.push(note);
-              var pnode = element[0].previousElementSibling;
-              scope.$parent.$parent.$digest();
-              var body = query('.body', pnode);
-              query('.title', body.children[body.children.length - 1]).focus();
+            'alt right|tab': function (e) {
+              if (!scope.parent) return;
+              scope.parent.move.right(scope);
             },
-            'meta left|shift tab': function (e) {
-              var pnote = scope.$parent.note;
-              if (!pnote) return false;
-              if (!scope.$parent.$parent.$parent.$parent) return false;
-              var ppnote = scope.$parent.$parent.$parent.$parent.note;
-              if (!ppnote) return false;
-              var ind = scope.$parent.$index;
-              var pind = scope.$parent.$parent.$parent.$index;
-              var note = pnote.children.splice(ind, 1)[0];
-              ppnote.children.splice(pind+1, 0, note);
-              var pnode = element[0].parentNode.parentNode.parentNode.parentNode;
-              scope.$parent.$parent.$parent.$parent.$digest();
-              query('.title', pnode.children[pind + 1]).focus();
+            'alt left|shift tab': function (e) {
+              if (!scope.parent || !scope.parent.parent) return;
+              scope.parent.parent.move.left(scope, scope.parent);
             },
-            'meta down|ctrl S': function (e) {
-              var pnote = scope.$parent.note;
-              if (!pnote) return false;
-              var ind = scope.$parent.$index;
-              // if you're at the end, move it to the top of the parent's next
-              // sibling
-              if (ind >= pnote.children.length - 1) {
-                var ppnote = scope.$parent.$parent.$parent.$parent.note;
-                if (!ppnote) return false;
-                var pind = scope.$parent.$parent.$parent.$index;
-                if (pind >= ppnote.children.length - 1) return false;
-                var note = pnote.children.splice(ind, 1)[0];
-                ppnote.children[pind + 1].children.splice(0, 0, note);
-                var pnode = element[0].parentNode.parentNode.parentNode.parentNode;
-                scope.$parent.$parent.$parent.$parent.$digest();
-                query('.title', query('.body', pnode.children[pind + 1])).focus();
-                return false;
-              }
-              var note = pnote.children.splice(ind, 1)[0];
-              pnote.children.splice(ind + 1, 0, note);
-              scope.$parent.$parent.$digest();
-              title.focus();
+            'alt down|ctrl S': function (e) {
+              if (!scope.parent) return;
+              scope.parent.move.down(scope);
             },
-            'meta up|ctrl W': function (e) {
-              var pnote = scope.$parent.note;
-              if (!pnote) return false;
-              var ind = scope.$parent.$index;
-              if (ind < 1) {
-                var ppnote = scope.$parent.$parent.$parent.$parent.note;
-                if (!ppnote) return false;
-                var pind = scope.$parent.$parent.$parent.$index;
-                if (pind < 1) return false;
-                var note = pnote.children.splice(ind, 1)[0];
-                ppnote.children[pind - 1].children.push(note);
-                var pnode = element[0].parentNode.parentNode.parentNode.parentNode;
-                scope.$parent.$parent.$parent.$parent.$digest();
-                var body = query('.body', pnode.children[pind - 1]);
-                query('.title', body.children[body.children.length - 1]).focus();
-                return false;
-              }
-              var note = pnote.children.splice(ind, 1)[0];
-              pnote.children.splice(ind-1, 0, note);
-              scope.$parent.$parent.$digest();
-              title.focus();
+            'alt up|ctrl W': function (e) {
+              if (!scope.parent) return;
+              scope.parent.move.up(scope);
             },
             'ctrl D|down': function (e) {
               var child = query('.title', query('.body', element[0]));
@@ -128,9 +165,6 @@ var ng = {
                 child = query('.title', el.nextElementSibling);
               }
               child.focus();
-              e.stopPropagation();
-              e.preventDefault();
-              return false;
             },
             'ctrl E|up': function (e) {
               var prevChild = prev(element[0])
@@ -147,9 +181,6 @@ var ng = {
               }
               if (child)
                 child.focus();
-              e.stopPropagation();
-              e.preventDefault();
-              return false;
             },
             'ctrl space': function (e) {
               query('.tags input', element[0]).focus();
