@@ -1,4 +1,4 @@
-.note(ng-class='{"major": note.properties.type == "major"}')
+.note(ng-class='note.properties.type')
   .head
     .bullet {{ note.properties.type == "major" ? "&raquo;" : "&bull;" }}
     span.title(data-ng-model='note.title', contenteditable='true')

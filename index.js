@@ -20,7 +20,7 @@ var tryquery = function (sel, el) {
   }
 };
 
-var ng = {
+module.exports = {
   deps: {
     'tags': require('tags'),
     'contenteditable': require('contenteditable')
@@ -124,10 +124,10 @@ var ng = {
                   return;
                 note.children.splice(cindex, 1);
                 var pscope = scope.parent;
-                pscope.note.children[index - 1].children.splice(0, 0, cnote);
+                pscope.note.children[index - 1].children.push(cnote);
                 cscope.title.blur();
                 pscope.$digest();
-                query('.title', query('.body', pscope.body.children[index - 1])).focus();
+                query('.title', query('.body', pscope.body.children[index - 1]).lastElementChild).focus();
                 return;
               }
               note.children.splice(cindex, 1);
@@ -193,6 +193,3 @@ var ng = {
       };
     }]
 };
-
-module.exports = ng;
-
