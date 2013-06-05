@@ -20,6 +20,20 @@ var tryquery = function (sel, el) {
   }
 };
 
+var mapKeys = function (settings, keymap) {
+  var names = Object.keys(keymap);
+  var map = {};
+  for (var i=0; i<names.length; i++) {
+    var value = settings.get(names[i]);
+    if (!value) {
+      console.error('Invalid setting name in keymap: ' + names[i]);
+      continue;
+    }
+    map[value] = keymap[names[i]];
+  }
+  return keys(map);
+};
+
 var makeMovers = function (scope) {
   return {
     right: function (cscope) {
@@ -53,6 +67,39 @@ var makeMovers = function (scope) {
       scope.$digest();
       query('.title', scope.body.children[mindex + 1]).focus();
     },
+
+    downWF: function (cscope) {
+      var cindex = cscope.index();
+      var cnote  = cscope.note;
+      var note = scope.note;
+      // move out of this item and over to the next one
+      if (cindex >= note.children.length - 1) {
+        if (!scope.parent) return;
+        var index = scope.index();
+        if (index >= scope.parent.note.children.length - 1)
+          return scope.parent.move && scope.parent.move.left(cscope, scope);
+        note.children.splice(cindex, 1);
+        var pscope = scope.parent;
+        pscope.note.children.splice(index + 1, 0, cnote);
+        cscope.title.blur();
+        pscope.$digest();
+        query('.title', pscope.body.children[index + 1]).focus();
+        return;
+      }
+      note.children.splice(cindex, 1);
+      if (note.children[cindex].children.length) {
+        note.children[cindex].children.unshift(cnote);
+        cscope.title.blur();
+        scope.$digest();
+        query('.title', query('.body', scope.body.children[cindex])).focus();
+      } else {
+        note.children.splice(cindex + 1, 0, cnote);
+        cscope.title.blur();
+        scope.$digest();
+        cscope.title.focus();
+      }
+    },
+      
     down: function (cscope) {
       var cindex = cscope.index();
       var cnote  = cscope.note;
@@ -77,6 +124,7 @@ var makeMovers = function (scope) {
       scope.$digest();
       cscope.title.focus();
     },
+
     up: function (cscope) {
       var cindex = cscope.index();
       var cnote  = cscope.note;
@@ -100,6 +148,36 @@ var makeMovers = function (scope) {
       cscope.title.blur();
       scope.$digest();
       cscope.title.focus();
+    },
+
+    upWF: function (cscope) {
+      var cindex = cscope.index();
+      var cnote  = cscope.note;
+      var note = scope.note;
+      // move out of this item and over to the next one
+      if (cindex < 1) {
+        if (!scope.parent) return;
+        var index = scope.index();
+        note.children.splice(cindex, 1);
+        var pscope = scope.parent;
+        pscope.note.children.splice(index, 0, cnote);
+        cscope.title.blur();
+        pscope.$digest();
+        query('.title', pscope.body.children[index]).focus();
+        return;
+      }
+      note.children.splice(cindex, 1);
+      if (note.children[cindex - 1].children.length) {
+        note.children[cindex - 1].children.push(cnote);
+        cscope.title.blur();
+        scope.$digest();
+        query('.title', query('.body', scope.body.children[cindex - 1]).lastElementChild).focus();
+      } else {
+        note.children.splice(cindex - 1, 0, cnote);
+        cscope.title.blur();
+        scope.$digest();
+        cscope.title.focus();
+      }
     }
   };
 };
@@ -109,7 +187,7 @@ module.exports = {
     'tags': require('tags'),
     'contenteditable': require('contenteditable')
   },
-  directive: ['$compile',
+  directive: ['$compile', 'settings',
     function($compile, settings){
       return {
         scope: {},
@@ -140,24 +218,32 @@ module.exports = {
             return scope.$parent.$index;
           };
           scope.move = makeMovers(scope);
-          events.bind(title, 'keydown', keys({
-            'alt right|tab': function (e) {
+          var keymap = {
+            moveRight: function (e) {
               if (!scope.parent) return;
               scope.parent.move.right(scope);
             },
-            'alt left|shift tab': function (e) {
+            moveLeft: function (e) {
               if (!scope.parent || !scope.parent.parent) return;
               scope.parent.parent.move.left(scope, scope.parent);
             },
-            'alt down|ctrl S': function (e) {
+            moveDown: function (e) {
               if (!scope.parent) return;
-              scope.parent.move.down(scope);
+              if (settings.get('movementStyle') == 'org') {
+                scope.parent.move.down(scope);
+              } else {
+                scope.parent.move.downWF(scope);
+              }
             },
-            'alt up|ctrl W': function (e) {
+            moveUp: function (e) {
               if (!scope.parent) return;
-              scope.parent.move.up(scope);
+              if (settings.get('movementStyle') == 'org') {
+                scope.parent.move.up(scope);
+              } else {
+                scope.parent.move.upWF(scope);
+              }
             },
-            'ctrl D|down': function (e) {
+            goDown: function (e) {
               var child = query('.title', query('.body', element[0]));
               if (!child) {
                 var el = element[0];
@@ -168,7 +254,7 @@ module.exports = {
               }
               child.focus();
             },
-            'ctrl E|up': function (e) {
+            goUp: function (e) {
               var prevChild = prev(element[0])
                 , child;
               if (prevChild) {
@@ -184,13 +270,14 @@ module.exports = {
               if (child)
                 child.focus();
             },
-            'ctrl space': function (e) {
+            editTags: function (e) {
               query('.tags input', element[0]).focus();
               e.stopPropagation();
               e.preventDefault();
               return false;
             }
-          }));
+          };
+          events.bind(title, 'keydown', mapKeys(settings, keymap));
         }
       };
     }]
