@@ -48,9 +48,9 @@ angular.module('note', ['tags', 'contenteditable'])
             return scope.$parent.$index;
           };
           scope.move = makeMovers(scope);
-          var keymap = makeKeyMap(settings, scope);
-          scope.keydown = keys(settings.getHashKeys(keymap));
-          events.bind(scope.title, 'keydown', scope.keydown);
+          scope.keydown = makeKeyMap(settings, scope);
+          var keydown = keys(settings.getHashKeys(scope.keydown));
+          events.bind(scope.title, 'keydown', keydown);
         }
       };
     }]);

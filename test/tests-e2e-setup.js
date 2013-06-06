@@ -13,13 +13,14 @@ function Tester($scope) {
       {title: 'Food', children:[]},
       {title: 'Friends', children:[],
        properties: {type: 'major'}},
-      {title: 'Family', children:[]},
-      {title: 'Family', children:[]},
-      {title: 'Family', children:[]},
-      {title: 'Family', children:[]},
-      {title: 'Family', children:[]},
-      {title: 'Family', children:[]},
-      {title: 'Family', children:[]}
+      {title: 'Family2', children:[]},
+      {title: 'Family3', children:[]},
+      {title: 'Family4', children:[]},
+      {title: 'Family5', children:[]},
+      {title: 'Family6', children:[
+        {title: 'Family7', children:[]},
+      ]},
+      {title: 'Family8', children:[]}
     ]
   };
 }
