@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - 0.11
+
+before_script:
+  - npm install -g component
+  - component install --dev
+  - component build --dev
+  - npm install -g mocha-phantomjs
+script: make testci-e2e

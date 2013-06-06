@@ -1,6 +1,7 @@
+var query = require('query');
 
 // the keys here are tied to settings variables
-module.exports.makeKeyMap = function (settings, el, scope) {
+module.exports.makeKeyMap = function (settings, scope) {
   return {
     moveRight: function (e) {
       if (!scope.parent) return;
@@ -27,7 +28,7 @@ module.exports.makeKeyMap = function (settings, el, scope) {
       }
     },
     goDown: function (e) {
-      var child;
+      var child, el = scope.el;
       if (!scope.note.children.length) {
         while (!el.nextElementSibling && el.classList.contains('child')) {
           el = el.parentNode.parentNode.parentNode;
@@ -39,8 +40,8 @@ module.exports.makeKeyMap = function (settings, el, scope) {
       child.focus();
     },
     goUp: function (e) {
-      var prevChild = el.previousElementSibling;
-      , child;
+      var prevChild = scope.el.previousElementSibling
+        , child;
       if (prevChild) {
         child = query.all('.title', prevChild);
         if (child) {
@@ -48,14 +49,14 @@ module.exports.makeKeyMap = function (settings, el, scope) {
         }
       }
       if (!child) {
-        var parent = el.parentNode.parentNode;
+        var parent = scope.el.parentNode.parentNode;
         child = query('.title', parent);
       }
       if (child)
         child.focus();
     },
     editTags: function (e) {
-      query('.tags input', el).focus();
+      query('.tags input', scope.el).focus();
     }
   };
 };

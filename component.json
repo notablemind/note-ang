@@ -7,15 +7,24 @@
   "dependencies": {
     "notablemind/tags": "*",
     "notablemind/keys": "*",
+    "notablemind/settings": "*",
+    "notablemind/settings-shortcut": "*",
+    "jabapyth/angularjs": "*",
     "component/query": "*",
     "component/event": "*",
     "notablemind/contenteditable": "*"
   },
-  "development": {},
+  "development": {
+    "visionmedia/mocha": "1.9.0",
+    "chaijs/chai": "*"
+  },
   "license": "MIT",
   "main": "index.js",
   "scripts": [
     "index.js",
+    "keymap.js",
+    "settings.js",
+    "movement.js",
     "template.js"
   ],
   "styles": [

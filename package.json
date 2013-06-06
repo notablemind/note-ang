@@ -1,0 +1,29 @@
+{
+  "name": "notablemind-note",
+  "version": "0.0.0",
+  "description": "Notes component",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/notablemind/note.git"
+  },
+  "dependencies": {
+    "component-stylus": "*"
+  },
+  "keywords": [
+    "angular",
+    "directive",
+    "note",
+    "list"
+  ],
+  "author": "Jared Forsyth <jared@jaredforsyth.com>",
+  "license": "MIT",
+  "readmeFilename": "Readme.md",
+  "gitHead": "38be7cb26353da404153b00c6c58c64382de54d1"
+}

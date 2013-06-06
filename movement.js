@@ -6,6 +6,8 @@
  and handled moving them around. Would that be useful?
  */
 
+var query = require('query');
+
 module.exports.makeMovers = function (scope) {
   return {
     right: function (cscope) {

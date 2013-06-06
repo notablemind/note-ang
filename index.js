@@ -1,15 +1,23 @@
 
 var keys = require('keys')
   , query = require('query')
+  , angular = require('angularjs')
   , events = require('event');
 
 // angular modules
 require('tags');
 require('contenteditable');
+var settings = require('settings');
+
+var settingsShortcut = require('settings-shortcut');
+settings.register('keyboard-shortcut', settingsShortcut);
 
 var template = require('./template')
+  , defaultSettings = require('./settings')
   , makeKeyMap = require('./keymap').makeKeyMap
   , makeMovers = require('./movement').makeMovers;
+
+module.exports.defaultSettings = defaultSettings;
 
 angular.module('note', ['tags', 'contenteditable'])
   .directive('note', ['$compile', 'settings',
@@ -40,8 +48,10 @@ angular.module('note', ['tags', 'contenteditable'])
             return scope.$parent.$index;
           };
           scope.move = makeMovers(scope);
-          var keymap = makeKeyMap(settings, element[0], scope);
-          events.bind(scope.title, 'keydown', settings.getHashKeys(keymap));
+          var keymap = makeKeyMap(settings, scope);
+          scope.keydown = keys(settings.getHashKeys(keymap));
+          events.bind(scope.title, 'keydown', scope.keydown);
         }
       };
     }]);
+
