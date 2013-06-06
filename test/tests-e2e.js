@@ -20,7 +20,7 @@ after(function(){
   // bootstrap('template', 'test');
 });
 
-// no phantomjs
+// doesnt work in phantomjs :(
 var keyme = function (node, name) {
   var e = new Event('keydown');
   var attrs = keys.serialize(name);
@@ -37,7 +37,15 @@ var keyyou = function (name) {
   attrs.stopPropagation = function(){};
   return attrs;
 };
- 
+var getTitle = function (node, num) {
+  return query.all('.title', node)[num];
+};
+var isFocused = function (node, num) {
+  var title = getTitle(node, num);
+  expect('' + document.activeElement).to.equal('' + title);
+  expect(document.activeElement === title).to.be.true;
+};
+
 describe('note guy', function(){
   var node, injector;
   beforeEach(function(){
@@ -61,36 +69,70 @@ describe('note guy', function(){
     expect(titles.length).to.eql(10);
   });
 
-  describe('when the second title is focused', function(){
+  describe('when the second item of a flat list of 9 is focused', function(){
     var title, $title, settings;
     beforeEach(function(){
-      title = query.all('.title', node)[1];
+      title = query.all('.title', node)[2];
       $title = angular.element(title);
       title.focus();
       settings = injector.get('settings');
     });
     describe('and the down key is pressed', function(){
       beforeEach(function(){
-        var down = settings.get('goDown');
-        // keyme(title, down.split('|')[0]);
-        var e = keyyou(down.split('|')[0]);
-        var s = $title.scope();
-        $title.scope().keydown(e);
+        $title.scope().keydown.goDown();
       });
       it('should focus the next one', function(){
-        var next = query.all('.title', node)[2];
-        expect(document.activeElement).to.equal(next);
+        isFocused(node, 3);
       });
     });
     describe('and the up key is pressed', function(){
       beforeEach(function(){
-        var up = settings.get('goUp').split('|')[0];
-        var e = keyyou(up);
-        $title.scope().keydown(e);
-        // keyme(title, up);
+        $title.scope().keydown.goUp();
       });
       it('should focus the previous one', function(){
-        expect(document.activeElement).to.equal(query('.title', node));
+        isFocused(node, 1);
+      });
+    });
+
+    describe('and the tab key is pressed', function(){
+      var ctitle, note, ptitle, pnote;
+      beforeEach(function(){
+        ptitle = angular.element(getTitle(node, 1));
+        pnote = ptitle.scope().note;
+        note = $title.scope().note;
+        $title.scope().keydown.moveRight();
+        ctitle = getTitle(node, 2);
+      });
+      it('should stay focused', function(){
+        isFocused(node, 2);
+      });
+      it('should have the same note', function(){
+        expect(angular.element(ctitle).scope().note).to.eql(note);
+      });
+      it('should now be the first child of the previous el', function(){
+        expect(pnote.children[0]).to.eql(note);
+      });
+    });
+  });
+  describe('when a first sub-child is selected', function(){
+    var title, $title, settings;
+    beforeEach(function(){
+      title = query.all('.title', node)[7];
+      $title = angular.element(title);
+      title.focus();
+      settings = injector.get('settings');
+    });
+    describe("and it's moved left", function(){
+      var ctitle, note, ptitle, pnote;
+      beforeEach(function(){
+        ptitle = angular.element(getTitle(node, 0));
+        pnote = ptitle.scope().note;
+        note = $title.scope().note;
+        $title.scope().keydown.moveLeft();
+        ctitle = getTitle(node, 7);
+      });
+      it("should be a child (in the right place) of the parent's parent", function(){
+        expect(pnote.children[6]).to.equal(note);
       });
     });
   });
