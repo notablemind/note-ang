@@ -2,11 +2,44 @@
   <head>
     <title>Component Test</title>
     <link rel="stylesheet" href="../build/build.css">
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      table, th, td {
+        border: 1px solid #ccc;
+      }
+      th, td {
+        padding: 5px 10px;
+      }
+      .docs {
+        margin-bottom: 30px;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
     <script src="../build/build.js"></script>
     <script src="tests-e2e-setup.js"></script>
+    <div class="docs">
+      <h1>Notablemind Note Example</h1>
+      <div>
+        <h3>Keyboard shortcuts</h3>
+        <table>
+          <thead>
+            <th>Shortcut</th>
+            <th>Action</th>
+          </thead>
+          <tbody>
+            <tr><td>alt-right</td><td>indent</td></tr>
+            <tr><td>alt-left</td><td>outdent</td></tr>
+            <tr><td>alt-up</td><td>move item up</td></tr>
+            <tr><td>alt-down</td><td>move item down</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <hr/>
     <div id="ang" ng-app="test">
       <div ng-controller="Tester">
         <div data-note="mylar"></div>
