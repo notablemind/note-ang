@@ -2,7 +2,6 @@
 var expect = require('chai').expect
   , angular = require('angularjs')
   , query = require('query')
-  , settings = require('settings')
   , keys = require('keys')
   , note = require('note');
 

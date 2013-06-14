@@ -2,7 +2,10 @@
 var expect = require('chai').expect
   , angular = require('angularjs')
   , settings = require('settings')
+  , angularSettings = require('angular-settings')
   , note = require('note');
+
+angularSettings.factory(settings.getSettings());
 
 function Tester($scope) {
   $scope.mylar = {
@@ -25,8 +28,5 @@ function Tester($scope) {
   };
 }
 
-angular.module('test', ['note'])
-  .factory('settings', function(){
-    return new settings.SettingsManager(note.defaultSettings);
-  });
+angular.module('test', ['note', 'settings']);
 

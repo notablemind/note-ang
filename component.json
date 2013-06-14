@@ -8,6 +8,7 @@
     "notablemind/tags": "*",
     "notablemind/keys": "*",
     "notablemind/settings": "*",
+    "notablemind/angular-settings": "*",
     "notablemind/settings-shortcut": "*",
     "jabapyth/angularjs": "*",
     "component/query": "*",
