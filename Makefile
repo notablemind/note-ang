@@ -35,7 +35,7 @@ endif
 test: build
 	@${open} test/index.html
 
-testci: build
+testci: buildci
 	@testem ci -f test/testem.json -l PhantomJS
 
 .PHONY: clean testem test testci buildci
