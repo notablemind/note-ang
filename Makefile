@@ -2,6 +2,9 @@
 build: components index.js notes.styl template.js node_modules
 	@component build --dev --use component-stylus
 
+buildci: components
+	@component build --dev
+
 template.js: template.html
 	@component convert $<
 
@@ -35,4 +38,4 @@ test: build
 testci: build
 	@testem ci -f test/testem.json -l PhantomJS
 
-.PHONY: clean testem test testci
+.PHONY: clean testem test testci buildci

@@ -4,8 +4,5 @@ node_js:
 
 before_script:
   - npm install -g component
-  - npm install -g jade
-  - component install --dev
-  - component build --dev
-  - npm install -g mocha-phantomjs
-script: make testci-e2e
+  - npm install -g testem
+script: make testci
