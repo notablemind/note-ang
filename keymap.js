@@ -3,31 +3,31 @@ var query = require('query');
 // the keys here are tied to settings variables
 module.exports.makeKeyMap = function (settings, scope) {
   return {
-    moveRight: function (e) {
+    'nav.moveRight': function (e) {
       if (!scope.parent) return;
       scope.parent.move.right(scope);
     },
-    moveLeft: function (e) {
+    'nav.moveLeft': function (e) {
       if (!scope.parent || !scope.parent.parent) return;
       scope.parent.parent.move.left(scope, scope.parent);
     },
-    moveDown: function (e) {
+    'nav.moveDown': function (e) {
       if (!scope.parent) return;
-      if (settings.get('movementStyle') == 'org') {
+      if (settings.get('nav.movementStyle') == 'org') {
         scope.parent.move.down(scope);
       } else {
         scope.parent.move.downWF(scope);
       }
     },
-    moveUp: function (e) {
+    'nav.moveUp': function (e) {
       if (!scope.parent) return;
-      if (settings.get('movementStyle') == 'org') {
+      if (settings.get('nav.movementStyle') == 'org') {
         scope.parent.move.up(scope);
       } else {
         scope.parent.move.upWF(scope);
       }
     },
-    goDown: function (e) {
+    'nav.goDown': function (e) {
       var child, el = scope.el;
       if (!scope.note.children.length) {
         while (!el.nextElementSibling && el.classList.contains('child')) {
@@ -39,7 +39,7 @@ module.exports.makeKeyMap = function (settings, scope) {
       }
       child.focus();
     },
-    goUp: function (e) {
+    'nav.goUp': function (e) {
       var prevChild = scope.el.previousElementSibling
         , child;
       if (prevChild) {
@@ -55,7 +55,7 @@ module.exports.makeKeyMap = function (settings, scope) {
       if (child)
         child.focus();
     },
-    editTags: function (e) {
+    'nav.editTags': function (e) {
       query('.tags input', scope.el).focus();
     }
   };

@@ -7,7 +7,7 @@ var keys = require('keys')
 // angular modules
 require('tags');
 require('contenteditable');
-var settings = require('settings')
+var settings = require('settings').sub('note')
   , angularSettings = require('angular-settings');
 
 var settingsShortcut = require('settings-shortcut');
@@ -18,13 +18,11 @@ var template = require('./template')
   , makeKeyMap = require('./keymap').makeKeyMap
   , makeMovers = require('./movement').makeMovers;
 
-// module.exports.defaultSettings = defaultSettings;
-
 settings.add(defaultSettings);
 
 angular.module('note', ['tags', 'contenteditable'])
-  .directive('note', ['$compile', 'settings',
-    function($compile, settings){
+  .directive('note', ['$compile',
+    function($compile){
       return {
         scope: {},
         replace: true,
@@ -52,7 +50,7 @@ angular.module('note', ['tags', 'contenteditable'])
           };
           scope.move = makeMovers(scope);
           scope.keydown = makeKeyMap(settings, scope);
-          var keydown = keys(settings.getHashKeys(scope.keydown, {pre: 'nav.'}));
+          var keydown = keys(settings.getHashKeys(scope.keydown));
           events.bind(scope.title, 'keydown', keydown);
         }
       };
