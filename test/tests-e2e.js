@@ -78,7 +78,7 @@ describe('note guy', function(){
     });
     describe('and the down key is pressed', function(){
       beforeEach(function(){
-        $title.scope().keydown.goDown();
+        $title.scope().keydown['nav.goDown']();
       });
       it('should focus the next one', function(){
         isFocused(node, 3);
@@ -86,7 +86,7 @@ describe('note guy', function(){
     });
     describe('and the up key is pressed', function(){
       beforeEach(function(){
-        $title.scope().keydown.goUp();
+        $title.scope().keydown['nav.goUp']();
       });
       it('should focus the previous one', function(){
         isFocused(node, 1);
@@ -99,7 +99,7 @@ describe('note guy', function(){
         ptitle = angular.element(getTitle(node, 1));
         pnote = ptitle.scope().note;
         note = $title.scope().note;
-        $title.scope().keydown.moveRight();
+        $title.scope().keydown['nav.moveRight']();
         ctitle = getTitle(node, 2);
       });
       it('should stay focused', function(){
@@ -127,7 +127,7 @@ describe('note guy', function(){
         ptitle = angular.element(getTitle(node, 0));
         pnote = ptitle.scope().note;
         note = $title.scope().note;
-        $title.scope().keydown.moveLeft();
+        $title.scope().keydown['nav.moveLeft']();
         ctitle = getTitle(node, 7);
       });
       it("should be a child (in the right place) of the parent's parent", function(){
