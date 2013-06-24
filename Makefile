@@ -1,5 +1,5 @@
 
-build: components index.js notes.styl template.js node_modules
+build: index.js notes.styl template.js
 	@component build --dev --use component-stylus
 
 buildci: components
@@ -31,6 +31,9 @@ endif
 ifeq ($(UNAME_S),Darwin)
 		open := open
 endif
+
+example: build
+	@${open} test/example.html
 
 test: build
 	@${open} test/index.html

@@ -13,6 +13,7 @@
     "jabapyth/angularjs": "*",
     "component/query": "*",
     "component/event": "*",
+    "notablemind/scoped-events": "*",
     "notablemind/contenteditable": "*"
   },
   "development": {

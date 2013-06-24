@@ -22,14 +22,19 @@ module.exports.makeMovers = function (scope) {
       note.children.splice(cindex, 1);
       note.children[cindex-1].children.push(cnote);
       cscope.title.blur();
-      scope.$digest();
       var prev = scope.body.children[cindex-1];
+      cscope.events.emit('move:right', {
+        path: [],
+        id: cnote.properties.id,
+        pid: note.properties.id
+      });
+      scope.$digest();
       query('.title', query('.body', prev).lastElementChild).focus();
     },
     left: function (child, middle) {
       var cnote = child.note;
       if (!cnote) {
-        console.error('Was expecting a child scope w/ note', cscope);
+        console.error('Was expecting a child scope w/ note', child);
         return;
       }
       var note = scope.note;
@@ -38,6 +43,11 @@ module.exports.makeMovers = function (scope) {
       var mindex = middle.index();
       note.children.splice(mindex + 1, 0, cnote);
       child.title.blur();
+      child.events.emit('move:left', {
+        path: [],
+        id: cnote.properties.id,
+        pid: note.properties.id
+      });
       scope.$digest();
       query('.title', scope.body.children[mindex + 1]).focus();
     },
@@ -56,10 +66,20 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children.splice(index + 1, 0, cnote);
         cscope.title.blur();
+        cscope.events.emit('move:wf:down', {
+          path: [],
+          id: cnote.properties.id,
+          pid: note.properties.id
+        });
         pscope.$digest();
         query('.title', pscope.body.children[index + 1]).focus();
         return;
       }
+      cscope.events.emit('move:wf:down', {
+        path: [],
+        id: cnote.properties.id,
+        pid: note.properties.id
+      });
       note.children.splice(cindex, 1);
       if (note.children[cindex].children.length) {
         note.children[cindex].children.unshift(cnote);
@@ -73,7 +93,7 @@ module.exports.makeMovers = function (scope) {
         cscope.title.focus();
       }
     },
-      
+
     down: function (cscope) {
       var cindex = cscope.index();
       var cnote  = cscope.note;
@@ -88,10 +108,20 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children[index + 1].children.splice(0, 0, cnote);
         cscope.title.blur();
+        cscope.events.emit('move:down', {
+          path: [],
+          id: cnote.properties.id,
+          pid: note.properties.id
+        });
         pscope.$digest();
         query('.title', query('.body', pscope.body.children[index + 1])).focus();
         return;
       }
+      cscope.events.emit('move:down', {
+        path: [],
+        id: cnote.properties.id,
+        pid: note.properties.id
+      });
       note.children.splice(cindex, 1);
       note.children.splice(cindex + 1, 0, cnote);
       cscope.title.blur();
@@ -113,12 +143,22 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children[index - 1].children.push(cnote);
         cscope.title.blur();
+        cscope.events.emit('move:up', {
+          path: [],
+          id: cnote.properties.id,
+          pid: note.properties.id
+        })
         pscope.$digest();
         query('.title', query('.body', pscope.body.children[index - 1]).lastElementChild).focus();
         return;
       }
       note.children.splice(cindex, 1);
       note.children.splice(cindex - 1, 0, cnote);
+      cscope.events.emit('move:up', {
+        path: [],
+        id: cnote.properties.id,
+        pid: note.properties.id
+      })
       cscope.title.blur();
       scope.$digest();
       cscope.title.focus();
@@ -136,11 +176,21 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children.splice(index, 0, cnote);
         cscope.title.blur();
+        cscope.events.emit('move:wf:up', {
+          path: [],
+          id: cnote.properties.id,
+          pid: note.properties.id
+        })
         pscope.$digest();
         query('.title', pscope.body.children[index]).focus();
         return;
       }
       note.children.splice(cindex, 1);
+      cscope.events.emit('move:wf:up', {
+        path: [],
+        id: cnote.properties.id,
+        pid: note.properties.id
+      })
       if (note.children[cindex - 1].children.length) {
         note.children[cindex - 1].children.push(cnote);
         cscope.title.blur();
