@@ -10,7 +10,7 @@
     "notablemind/settings": "*",
     "notablemind/angular-settings": "*",
     "notablemind/settings-shortcut": "*",
-    "jabapyth/angularjs": "*",
+    "jaredly/angularjs": "*",
     "component/query": "*",
     "component/event": "*",
     "notablemind/scoped-events": "*",
