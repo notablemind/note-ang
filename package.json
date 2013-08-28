@@ -27,6 +27,7 @@
   "readmeFilename": "Readme.md",
   "gitHead": "38be7cb26353da404153b00c6c58c64382de54d1",
   "devDependencies": {
-    "jshint": "~2.1.10"
+    "jshint": "~2.1.10",
+    "testem": "~0.4.2"
   }
 }

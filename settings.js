@@ -5,7 +5,10 @@ module.exports = {
     _type: 'keyboard-shortcut',
     movementStyle: {
       value: 'flat',
-      options: ['org', 'flat'],
+      options: [
+        ['Org-mode style', 'org'],
+        ['Flat workflowy style', 'flat']
+      ],
       type: 'radio',
       description: 'style of moving items up and down. Org will jump past items of the same level'
     },
