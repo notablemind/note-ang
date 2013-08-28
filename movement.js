@@ -147,7 +147,7 @@ module.exports.makeMovers = function (scope) {
           path: [],
           id: cnote.properties.id,
           pid: note.properties.id
-        })
+        });
         pscope.$digest();
         query('.title', query('.body', pscope.body.children[index - 1]).lastElementChild).focus();
         return;
@@ -158,7 +158,7 @@ module.exports.makeMovers = function (scope) {
         path: [],
         id: cnote.properties.id,
         pid: note.properties.id
-      })
+      });
       cscope.title.blur();
       scope.$digest();
       cscope.title.focus();
@@ -180,7 +180,7 @@ module.exports.makeMovers = function (scope) {
           path: [],
           id: cnote.properties.id,
           pid: note.properties.id
-        })
+        });
         pscope.$digest();
         query('.title', pscope.body.children[index]).focus();
         return;
@@ -190,7 +190,7 @@ module.exports.makeMovers = function (scope) {
         path: [],
         id: cnote.properties.id,
         pid: note.properties.id
-      })
+      });
       if (note.children[cindex - 1].children.length) {
         note.children[cindex - 1].children.push(cnote);
         cscope.title.blur();

@@ -14,12 +14,12 @@
     <script src="sinon-1.7.1.js"></script>
     <script src="../build/build.js"></script>
     <script>mocha.setup('bdd');</script>
-    <script src="tests-e2e-setup.js"></script>
+    <script src="setup-e2e.js"></script>
     <script src="tests-e2e.js"></script>
     <script id="template" type="text/template">
       <div id="ang" ng-app="test">
         <div ng-controller="Tester">
-          <div data-note="mylar"></div>
+          <div data-note="mylar" data-parent="true" data-events="events"></div>
         </div>
       </div>
     </script>

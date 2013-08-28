@@ -35,10 +35,16 @@ endif
 example: build
 	@${open} test/example.html
 
-test: build
+test: lint test-only
+testci: lint testci-only
+
+test-only: build
 	@${open} test/index.html
 
-testci: buildci
+testci-only: buildci
 	@testem ci -f test/testem.json -l PhantomJS
 
-.PHONY: clean testem test testci buildci
+lint:
+	@./node_modules/.bin/jshint *.js *.json test/setup-e2e.js test/tests-e2e.js
+
+.PHONY: clean testem test testci buildci test-only lint testci-only

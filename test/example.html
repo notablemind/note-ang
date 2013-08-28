@@ -20,7 +20,7 @@
   <body>
     <div class="container">
     <script src="../build/build.js"></script>
-    <script src="tests-e2e-setup.js"></script>
+    <script src="setup-e2e.js"></script>
     <div class="docs">
       <h1>Notablemind Note Example</h1>
       <div>
@@ -42,7 +42,7 @@
     <hr/>
     <div id="ang" ng-app="test">
       <div ng-controller="Tester">
-        <div data-note="mylar"></div>
+        <div data-note="mylar" data-parent="true" data-events="events"></div>
       </div>
     </div>
     </div>

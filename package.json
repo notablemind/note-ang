@@ -25,5 +25,8 @@
   "author": "Jared Forsyth <jared@jaredforsyth.com>",
   "license": "MIT",
   "readmeFilename": "Readme.md",
-  "gitHead": "38be7cb26353da404153b00c6c58c64382de54d1"
+  "gitHead": "38be7cb26353da404153b00c6c58c64382de54d1",
+  "devDependencies": {
+    "jshint": "~2.1.10"
+  }
 }

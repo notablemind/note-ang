@@ -1,5 +1,5 @@
 
-var expect = require('chai').expect
+var expect = require('expect.js')
   , angular = require('angularjs')
   , query = require('query')
   , keys = require('keys')
@@ -42,7 +42,7 @@ var getTitle = function (node, num) {
 var isFocused = function (node, num) {
   var title = getTitle(node, num);
   expect('' + document.activeElement).to.equal('' + title);
-  expect(document.activeElement === title).to.be.true;
+  expect(document.activeElement === title).to.equal(true);
 };
 
 describe('note guy', function(){
@@ -59,8 +59,8 @@ describe('note guy', function(){
   it('should load, having a head and a body', function(){
     var head = query('.head', node)
       , body = query('.body', node);
-    expect(head).to.be.ok;
-    expect(body).to.be.ok;
+    expect(head).to.be.ok();
+    expect(body).to.be.ok();
   });
 
   it('should have 10 titles', function(){
@@ -76,7 +76,7 @@ describe('note guy', function(){
       title.focus();
       settings = injector.get('settings');
     });
-    describe('and the down key is pressed', function(){
+    describe('and goDown is triggered', function(){
       beforeEach(function(){
         $title.scope().keydown['nav.goDown']();
       });
@@ -84,7 +84,7 @@ describe('note guy', function(){
         isFocused(node, 3);
       });
     });
-    describe('and the up key is pressed', function(){
+    describe('and goUp is triggered', function(){
       beforeEach(function(){
         $title.scope().keydown['nav.goUp']();
       });
@@ -93,7 +93,7 @@ describe('note guy', function(){
       });
     });
 
-    describe('and the tab key is pressed', function(){
+    describe('and moveRight is triggered', function(){
       var ctitle, note, ptitle, pnote;
       beforeEach(function(){
         ptitle = angular.element(getTitle(node, 1));

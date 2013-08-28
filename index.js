@@ -7,7 +7,7 @@ var keys = require('keys')
 // angular modules
 require('tags');
 require('contenteditable');
-var settings = require('settings').sub('note')
+var settings = require('settings')('note')
   , angularSettings = require('angular-settings');
 
 var settingsShortcut = require('settings-shortcut');
@@ -19,7 +19,7 @@ var template = require('./template')
   , Events = require('scoped-events')
   , makeMovers = require('./movement').makeMovers;
 
-settings.add(defaultSettings);
+settings.config(defaultSettings);
 
 angular.module('note', ['tags', 'contenteditable'])
   .directive('note', ['$compile',
@@ -43,8 +43,11 @@ angular.module('note', ['tags', 'contenteditable'])
             scope.$parent[name] = value;
             title = value.title;
           });
+          // should be overwritten by parent
+          scope.events = new Events();
           // if parent events changes for some reason...this shouldn't really happen
           scope.$parent.$watch(eventsName, function(value) {
+            if (!value) return;
             scope.childEvents = value.child(function (evt) {
               if (scope.note.properties.type === 'major' &&
                   !scope.note.properties.top) {

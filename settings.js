@@ -1,44 +1,42 @@
 
 module.exports = {
-  name: 'nav',
-  title: 'Navigation',
-  type: 'keyboard-shortcut',
-  settings: [
-    {
-      name: 'movementStyle',
+  nav: {
+    _group: true,
+    _type: 'keyboard-shortcut',
+    movementStyle: {
       value: 'flat',
       options: ['org', 'flat'],
       type: 'radio',
       description: 'style of moving items up and down. Org will jump past items of the same level'
-    }, {
-      name: 'goUp',
+    },
+    goUp: {
       value: 'up|ctrl E',
       description: 'select the previous item'
-    }, {
-      name: 'goDown',
+    },
+    goDown: {
       value: 'down|ctrl D',
       description: 'select the next item'
-    }, {
-      name: 'moveUp',
+    },
+    moveUp: {
       value: 'alt up|alt W',
       description: 'move the current item up'
-    }, {
-      name: 'moveDown',
+    },
+    moveDown: {
       value: 'alt down|alt S',
       description: 'move the current item down'
-    }, {
-      name: 'moveLeft',
+    },
+    moveLeft: {
       value: 'alt left|alt A',
       description: 'move the current item left'
-    }, {
-      name: 'moveRight',
+    },
+    moveRight: {
       value: 'alt right|alt D',
       description: 'move the current item right'
-    }, {
-      name: 'editTags',
+    },
+    editTags: {
       value: 'ctrl space',
       description: 'edit the tags of the current item'
     }
-  ]
+  }
 };
 

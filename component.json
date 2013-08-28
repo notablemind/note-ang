@@ -5,10 +5,10 @@
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "notablemind/tags": "*",
-    "notablemind/keys": "*",
-    "notablemind/settings": "*",
-    "notablemind/angular-settings": "*",
+    "notablemind/tags": "1.x",
+    "notablemind/keys": "1.x",
+    "notablemind/settings": "1.x",
+    "notablemind/angular-settings": "1.x",
     "notablemind/settings-shortcut": "*",
     "jaredly/angularjs": "*",
     "component/query": "*",
@@ -18,7 +18,7 @@
   },
   "development": {
     "visionmedia/mocha": "1.9.0",
-    "chaijs/chai": "*"
+    "lge88/expect.js": "*"
   },
   "license": "MIT",
   "main": "index.js",
