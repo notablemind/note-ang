@@ -2,11 +2,12 @@
 var keys = require('keys')
   , query = require('query')
   , angular = require('angularjs')
-  , events = require('event');
+  , events = require('event')
 
-// angular modules
-require('tags');
-require('contenteditable');
+  // angular modules
+  , tags = require('tags')
+  , contentEditable = require('contenteditable');
+
 var settings = require('settings')('note')
   , angularSettings = require('angular-settings');
 
@@ -21,16 +22,15 @@ var template = require('./template')
 
 settings.config(defaultSettings);
 
-angular.module('note', ['tags', 'contenteditable'])
-  .directive('note', ['$compile',
-    function ($compile) {
+module.exports = angular.module('note', [tags.name, contentEditable.name])
+  .directive('note', ['$compile', 'events',
+    function ($compile, io) {
       return {
         scope: {},
         replace: true,
         restrict: 'A',
         link: function (scope, element, attrs) {
-          var name = attrs.note
-            , eventsName = attrs.events;
+          var name = attrs.note;
           element.html(template);
           $compile(element.contents())(scope);
           var title;
@@ -42,19 +42,6 @@ angular.module('note', ['tags', 'contenteditable'])
           scope.$watch('note', function(value) {
             scope.$parent[name] = value;
             title = value.title;
-          });
-          // should be overwritten by parent
-          scope.events = new Events();
-          // if parent events changes for some reason...this shouldn't really happen
-          scope.$parent.$watch(eventsName, function(value) {
-            if (!value) return;
-            scope.childEvents = value.child(function (evt) {
-              if (scope.note.properties.type === 'major' &&
-                  !scope.note.properties.top) {
-                evt.path.unshift(scope.note.properties.slug);
-              }
-            });
-            scope.events = value;
           });
           // lookup other things
           scope.parent = null;
@@ -68,20 +55,23 @@ angular.module('note', ['tags', 'contenteditable'])
           scope.index = function () {
             return scope.$parent.$index;
           };
-          scope.move = makeMovers(scope);
+          scope.move = makeMovers(io, scope);
           scope.keydown = makeKeyMap(settings, scope);
           var keydown = keys(settings.getHashKeys(scope.keydown));
           events.bind(scope.title, 'keydown', keydown);
           events.bind(scope.title, 'blur', function () {
             if (scope.note.title === title) return;
             title = scope.note.title;
-            scope.events.emit('title:change', {
+            io.emit('change', {
               path: [],
-              id: scope.note.properties.id,
-              title: scope.note.title
+              id: scope.note.properties.id
             });
           });
         }
       };
-    }]);
+    }])
+  .factory('events', function () {
+    var Emitter = require('emitter');
+    return new Emitter();
+  });
 

@@ -8,7 +8,7 @@
 
 var query = require('query');
 
-module.exports.makeMovers = function (scope) {
+module.exports.makeMovers = function (io, scope) {
   return {
     right: function (cscope) {
       var cnote = cscope.note;
@@ -23,10 +23,9 @@ module.exports.makeMovers = function (scope) {
       note.children[cindex-1].children.push(cnote);
       cscope.title.blur();
       var prev = scope.body.children[cindex-1];
-      cscope.events.emit('move:right', {
-        path: [],
+      io.emit('move', {
         id: cnote.properties.id,
-        pid: note.properties.id
+        pid: note.children[cindex-1].properties.id
       });
       scope.$digest();
       query('.title', query('.body', prev).lastElementChild).focus();
@@ -43,10 +42,10 @@ module.exports.makeMovers = function (scope) {
       var mindex = middle.index();
       note.children.splice(mindex + 1, 0, cnote);
       child.title.blur();
-      child.events.emit('move:left', {
-        path: [],
+      io.emit('move', {
         id: cnote.properties.id,
-        pid: note.properties.id
+        pid: note.properties.id,
+        index: mindex + 1
       });
       scope.$digest();
       query('.title', scope.body.children[mindex + 1]).focus();
@@ -66,27 +65,32 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children.splice(index + 1, 0, cnote);
         cscope.title.blur();
-        cscope.events.emit('move:wf:down', {
-          path: [],
+        io.emit('move', {
           id: cnote.properties.id,
-          pid: note.properties.id
+          pid: pscope.note.properties.id,
+          index: index + 1
         });
         pscope.$digest();
         query('.title', pscope.body.children[index + 1]).focus();
         return;
       }
-      cscope.events.emit('move:wf:down', {
-        path: [],
-        id: cnote.properties.id,
-        pid: note.properties.id
-      });
       note.children.splice(cindex, 1);
       if (note.children[cindex].children.length) {
+        io.emit('move', {
+          id: cnote.properties.id,
+          pid: note.children[cindex].properties.id,
+          index: 0
+        });
         note.children[cindex].children.unshift(cnote);
         cscope.title.blur();
         scope.$digest();
         query('.title', query('.body', scope.body.children[cindex])).focus();
       } else {
+        io.emit('move', {
+          id: cnote.properties.id,
+          pid: note.properties.id,
+          index: cindex + 1
+        });
         note.children.splice(cindex + 1, 0, cnote);
         cscope.title.blur();
         scope.$digest();
@@ -106,21 +110,21 @@ module.exports.makeMovers = function (scope) {
           return;
         note.children.splice(cindex, 1);
         var pscope = scope.parent;
-        pscope.note.children[index + 1].children.splice(0, 0, cnote);
+        pscope.note.children[index + 1].children.unshift(cnote);
         cscope.title.blur();
-        cscope.events.emit('move:down', {
-          path: [],
+        io.emit('move', {
           id: cnote.properties.id,
-          pid: note.properties.id
+          pid: pscope.note.children[index + 1].properties.id,
+          index: 0
         });
         pscope.$digest();
         query('.title', query('.body', pscope.body.children[index + 1])).focus();
         return;
       }
-      cscope.events.emit('move:down', {
-        path: [],
+      io.emit('move', {
         id: cnote.properties.id,
-        pid: note.properties.id
+        pid: note.properties.id,
+        index: cindex + 1
       });
       note.children.splice(cindex, 1);
       note.children.splice(cindex + 1, 0, cnote);
@@ -143,10 +147,9 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children[index - 1].children.push(cnote);
         cscope.title.blur();
-        cscope.events.emit('move:up', {
-          path: [],
+        io.emit('move', {
           id: cnote.properties.id,
-          pid: note.properties.id
+          pid: pscope.note.children[index - 1].properties.id
         });
         pscope.$digest();
         query('.title', query('.body', pscope.body.children[index - 1]).lastElementChild).focus();
@@ -154,10 +157,10 @@ module.exports.makeMovers = function (scope) {
       }
       note.children.splice(cindex, 1);
       note.children.splice(cindex - 1, 0, cnote);
-      cscope.events.emit('move:up', {
-        path: [],
+      io.emit('move', {
         id: cnote.properties.id,
-        pid: note.properties.id
+        pid: note.properties.id,
+        index: cindex - 1
       });
       cscope.title.blur();
       scope.$digest();
@@ -176,27 +179,31 @@ module.exports.makeMovers = function (scope) {
         var pscope = scope.parent;
         pscope.note.children.splice(index, 0, cnote);
         cscope.title.blur();
-        cscope.events.emit('move:wf:up', {
-          path: [],
+        io.emit('move', {
           id: cnote.properties.id,
-          pid: note.properties.id
+          pid: pscope.note.properties.id,
+          index: index
         });
         pscope.$digest();
         query('.title', pscope.body.children[index]).focus();
         return;
       }
       note.children.splice(cindex, 1);
-      cscope.events.emit('move:wf:up', {
-        path: [],
-        id: cnote.properties.id,
-        pid: note.properties.id
-      });
       if (note.children[cindex - 1].children.length) {
+        io.emit('move', {
+          id: cnote.properties.id,
+          pid: note.children[cindex - 1].properties.id
+        });
         note.children[cindex - 1].children.push(cnote);
         cscope.title.blur();
         scope.$digest();
         query('.title', query('.body', scope.body.children[cindex - 1]).lastElementChild).focus();
       } else {
+        io.emit('move', {
+          id: cnote.properties.id,
+          pid: note.properties.id,
+          index: cindex - 1
+        });
         note.children.splice(cindex - 1, 0, cnote);
         cscope.title.blur();
         scope.$digest();
