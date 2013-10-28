@@ -39,7 +39,7 @@ module.exports.makeKeyMap = function (settings, scope) {
       }
       child.focus();
     },
-    'nav.goUp': function (e) {
+    'nav.goUp': function (e, toend) {
       var prevChild = scope.el.previousElementSibling
         , child;
       if (prevChild) {
@@ -52,11 +52,27 @@ module.exports.makeKeyMap = function (settings, scope) {
         var parent = scope.el.parentNode.parentNode;
         child = query('.title', parent);
       }
-      if (child)
+      if (child) {
         child.focus();
+        if (toend) {
+          var sel = window.getSelection();
+          sel.selectAllChildren(child);
+          sel.collapseToEnd();
+        }
+      }
     },
     'nav.editTags': function (e) {
       query('.tags input', scope.el).focus();
+    },
+    'nav.newAfter': function (e) {
+      if (!scope.parent) return;
+      scope.parent.move.newAfter(scope);
+    },
+    'nav.newChild': function (e) {
+      scope.move.newChild();
+    },
+    'nav.newLine': function (e) {
+      return true;
     }
   };
 };

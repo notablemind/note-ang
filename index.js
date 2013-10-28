@@ -22,6 +22,12 @@ var template = require('./template')
 
 settings.config(defaultSettings);
 
+function fragmentEmpty(fragment) {
+  var d = document.createElement('div');
+  d.appendChild(fragment);
+  return d.innerText.length === 0;
+}
+
 module.exports = angular.module('note', [tags.name, contentEditable.name])
   .directive('note', ['$compile', 'events',
     function ($compile, io) {
@@ -57,16 +63,64 @@ module.exports = angular.module('note', [tags.name, contentEditable.name])
           };
           scope.move = makeMovers(io, scope);
           scope.keydown = makeKeyMap(settings, scope);
-          var keydown = keys(settings.getHashKeys(scope.keydown));
+          var keyhash = settings.getHashKeys(scope.keydown);
+          keyhash.left = function (e) {
+            var range = window.getSelection().getRangeAt(0)
+              , clone = range.cloneRange();
+            if (!range.collapsed) return true;
+            clone.selectNodeContents(scope.title);
+            clone.setEnd(range.endContainer, range.endOffset);
+            if (clone.toString().trim().length !== 0) return true;
+            scope.keydown['nav.goUp'](e, true);
+          };
+          keyhash.right = function (e) {
+            var range = window.getSelection().getRangeAt(0)
+              , clone = range.cloneRange();
+            if (!range.collapsed) return true;
+            clone.selectNodeContents(scope.title);
+            clone.setStart(range.endContainer, range.endOffset);
+            if (clone.toString().trim().length !== 0) return true;
+            scope.keydown['nav.goDown'](e);
+          };
+          keyhash.backspace = function (e) {
+            if (!scope.parent) return;
+            if (scope.note.title.trim().length > 0 && scope.note.title !== '<br>') {
+              var range = window.getSelection().getRangeAt(0)
+              , clone = range.cloneRange();
+              if (!range.collapsed) return true;
+              clone.selectNodeContents(scope.title);
+              clone.setEnd(range.endContainer, range.endOffset);
+              if (!fragmentEmpty(clone.cloneContents())) return true;
+            } else {
+              scope.note.title = '';
+            }
+            scope.deleted = true;
+            scope.parent.move.removeChild(scope);
+          };
+          var keydown = keys(keyhash);
           events.bind(scope.title, 'keydown', keydown);
-          events.bind(scope.title, 'blur', function () {
+          var dirtyTimeout = null
+            , longerTimeout = null;
+          function saveTitle() {
+            if (dirtyTimeout) clearTimeout(dirtyTimeout);
+            if (longerTimeout) clearTimeout(longerTimeout);
+            dirtyTimeout = null;
+            longerTimeout = null;
+            if (scope.deleted) return;
             if (scope.note.title === title) return;
             title = scope.note.title;
             io.emit('change', {
               path: [],
               id: scope.note.properties.id
             });
+            console.log('saving');
+          }
+          events.bind(scope.title, 'keydown', function () {
+            if (dirtyTimeout) clearTimeout(dirtyTimeout);
+            dirtyTimeout = setTimeout(saveTitle, 500);
+            if (!longerTimeout) setTimeout(saveTitle, 2000);
           });
+          events.bind(scope.title, 'blur', saveTitle);
         }
       };
     }])

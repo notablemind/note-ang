@@ -39,6 +39,18 @@ module.exports = {
     editTags: {
       value: 'ctrl space',
       description: 'edit the tags of the current item'
+    },
+    newAfter: {
+      value: 'return',
+      description: 'Create a new item after the current one, splitting the current one at the cursor'
+    },
+    newChild: {
+      value: 'alt return',
+      description: 'Create a new item as the first child of the current one'
+    },
+    newLine: {
+      value: 'shift return',
+      description: 'Insert a newline into the current title (must include "return" to work atm)'
     }
   }
 };

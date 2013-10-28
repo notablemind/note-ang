@@ -6,7 +6,42 @@
  and handled moving them around. Would that be useful?
  */
 
-var query = require('query');
+var query = require('query')
+  , ObjectId = require('ObjectId.js');
+
+function newNote() {
+  var now = new Date().toString();
+  return {
+    title: '',
+    tags: [],
+    children: [],
+    properties: {
+      created: now,
+      modified: now,
+      id: ObjectId().toString()
+    }
+  };
+}
+
+function fragmentHtml(fragment) {
+  var d = document.createElement('div');
+  d.appendChild(fragment);
+  return d.innerHTML;
+}
+
+function shareText(title, one, two) {
+  var range = window.getSelection().getRangeAt(0)
+    , clone = range.cloneRange();
+  clone.selectNodeContents(title);
+  clone.setStart(range.endContainer, range.endOffset);
+  if (clone.toString().trim().length === 0) {
+    return;
+  }
+  two.title = fragmentHtml(clone.extractContents());
+  clone.selectNodeContents(title);
+  clone.setEnd(range.startContainer, range.startOffset);
+  one.title = fragmentHtml(clone.extractContents());
+}
 
 module.exports.makeMovers = function (io, scope) {
   return {
@@ -209,6 +244,65 @@ module.exports.makeMovers = function (io, scope) {
         scope.$digest();
         cscope.title.focus();
       }
+    },
+
+    newAfter: function (cscope) {
+      var cindex = cscope.index()
+        , child = newNote();
+      if (cscope.note.children.length) {
+        return cscope.move.newChild();
+      }
+      shareText(cscope.title, cscope.note, child);
+      scope.note.children.splice(cindex + 1, 0, child);
+      io.emit('create', {
+        id: child.properties.id,
+        pid: scope.note.properties.id,
+        note: child
+      });
+      scope.$digest();
+      query('.title', scope.body.children[cindex + 1]).focus();
+    },
+
+    newChild: function () {
+      var child = newNote();
+      scope.note.children.unshift(child);
+      shareText(scope.title, scope.note, child);
+      io.emit('create', {
+        id: child.properties.id,
+        pid: scope.note.properties.id,
+        note: child
+      });
+      scope.$digest();
+      query('.title', scope.body).focus();
+    },
+
+    removeChild: function (cscope) {
+      var cindex = cscope.index()
+        , cnote  = cscope.note
+        , note = scope.note;
+      note.children.splice(cindex, 1);
+      if (cnote.title.length) {
+        if (cindex > 0) {
+          note.children[cindex - 1].title += ' ' + cnote.title;
+          note.children[cindex - 1].title = note.children[cindex - 1].title.trim();
+        } else {
+          note.title += ' ' + cnote.title;
+          note.title = note.title.trim();
+        }
+      }
+      io.emit('delete', {id: cnote.properties.id});
+      cscope.title.blur();
+      scope.$digest();
+      var title;
+      if (cindex > 0) {
+        title = query('.title', scope.body.children[cindex - 1]);
+      } else {
+        title = scope.title;
+      }
+      title.focus();
+      var sel = window.getSelection();
+      sel.selectAllChildren(title);
+      sel.collapseToEnd();
     }
   };
 };
